@@ -9,7 +9,7 @@ Threeter is a 3D web game inspired by [Teeter Pro](https://play.google.com/store
 ### Functionality & MVP
 
 In Threeter, users can
-- [ ] Move the ball through the maze of walls, towards the red hole
+- [ ] Move the ball through the maze of walls, towards the green hole
 - [ ] View a help modal with basic instructions
 
 ### Wireframes
@@ -51,6 +51,7 @@ In addition to the webpack entry file, there will be the following scripts:
 **Day 3**:
 
 - Build map and game classes
+- Render nav links and help modal
 
 **Day 4**:
 
