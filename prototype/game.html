@@ -42,11 +42,11 @@
       buildLight(light);
       // No physics for lighting
 
-      const tileW = 0.2; // Don't know why we need this
+      const tileW = 0.2; // for scaling down
 
 			var pMaterialBall	= new CANNON.Material('pMaterialBall');
 			var pMaterialFloor	= new CANNON.Material('pMaterialFloor');
-			var pMaterialWall	= new CANNON.Material('pMaterialBall');
+			var pMaterialWall	= new CANNON.Material('pMaterialWall');
 			physicsWorld.world.addContactMaterial(new CANNON.ContactMaterial(
 				pMaterialBall,
 				pMaterialFloor,
@@ -61,11 +61,11 @@
 			));
 
       // Table
-      let table	= new THREE.Object3D();
+      // let table	= new THREE.Object3D();
       // Add floor to table
       let floor_mesh = buildFloor(-35*tileW, -20*tileW, 35*tileW, 20*tileW);
-      table.add(floor_mesh);
-      scene.add(table);
+      // table.add(floor_mesh);
+      scene.add(floor_mesh);
       // Apply phyics to floor
       let floor_body	= new THREEx.CannonBody({
   			mesh: floor_mesh,
@@ -81,7 +81,7 @@
         mass: 20,
     		material: pMaterialBall
     	}).addTo(physicsWorld);
-      ball_body.body.position.set(-15*tileW, 20*tileW, 0*tileW);
+      ball_body.body.position.set(-25*tileW, 20*tileW, 0*tileW);
 			ball_body.body.linearDamping = 0.8;
 			ball_body.body.angularDamping	= 0.9;
 
@@ -146,7 +146,7 @@
 
       var lastTimeMsec = null;
       let animate = function (nowMsec) {
-				requestAnimationFrame(animate);
+				requestAnimationFrame(animate);  // async
         lastTimeMsec	= lastTimeMsec || (nowMsec-1000/60);
         var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec);
         lastTimeMsec	= nowMsec;

@@ -17,13 +17,9 @@ function updateBallPosition(keyboard, ball_body, deltaMsec) {
     keypressed = true;
     force.z	= +0.2;
   }
-  if (keypressed == true) {
-    force.multiplyScalar(1); // don't know why we need this
+  if (keypressed === true) {
+    force.multiplyScalar(1);
     ball_body.mesh.updateMatrixWorld();
-  	// var deltaPos	= new THREE.Vector3().getPositionFromMatrix( ball_body.mesh.matrixWorld );
-    // var forceAngle	= - Math.PI/2 - Math.atan2(deltaPos.z, deltaPos.x);
-    // var matrix	= new THREE.Matrix4().makeRotationY( forceAngle );
-    // force.applyMatrix4( matrix );
     ball_body.applyImpulse(force, deltaMsec);
   }
 }
@@ -37,10 +33,10 @@ function buildFloor(x1, z1, x2, z2) {
   let material	= new THREE.MeshPhongMaterial({
     map		: texture
   });
-  texture.wrapS	= THREE.RepeatWrapping;
-  texture.wrapT	= THREE.RepeatWrapping;
-  texture.repeat.x= 35;
-  texture.repeat.y= 20;
+  // texture.wrapS	= THREE.RepeatWrapping;
+  // texture.wrapT	= THREE.RepeatWrapping;
+  // texture.repeat.x= 35;
+  // texture.repeat.y= 20;
   let mesh	= new THREE.Mesh(geometry, material);
   mesh.position.x	= x1 + width/2;
   mesh.position.y	= -height/2;
@@ -83,8 +79,8 @@ function addBall(radius) {
   let geometry	= new THREE.SphereGeometry(radius, 64, 64);
 	let mesh	= new THREE.Mesh(geometry, material);
   mesh.position.y	= 2;
-	mesh.receiveShadow	= true;
-	mesh.castShadow		= true;
+	mesh.receiveShadow = true;
+	mesh.castShadow	= true;
   return mesh;
 }
 
@@ -97,10 +93,10 @@ function addWall(x1, z1, x2, z2){
   let material	= new THREE.MeshPhongMaterial({
     map	: texture
   });
-  material.map.wrapS	= THREE.RepeatWrapping;
-	material.map.wrapT	= THREE.RepeatWrapping;
-	material.map.repeat.x	= 1/16;
-	material.map.repeat.y	= 1/16;
+  // material.map.wrapS	= THREE.RepeatWrapping;
+	// material.map.wrapT	= THREE.RepeatWrapping;
+	// material.map.repeat.x	= 1/16;
+	// material.map.repeat.y	= 1/16;
   var mesh	= new THREE.Mesh(geometry, material)
 	mesh.position.x	= x1 + width /2;
 	mesh.position.y	= height/2;
