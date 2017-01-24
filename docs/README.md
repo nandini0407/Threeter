@@ -16,7 +16,7 @@ In Threeter, users can
 
 This game will have a single screen with the board, nav links to Github, LinkedIn and Help modal.
 
-![wireframe](docs/wireframes/threeter.png)
+![wireframe](wireframes/threeter.png)
 
 ### Architecture and Technologies
 
