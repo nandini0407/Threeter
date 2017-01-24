@@ -22,7 +22,7 @@ This game will have a single screen with the board, nav links to Github, LinkedI
 
 This project will be implemented using the following technologies:
 
-- Vanilla JavaScript and `jquery` for overall structure and game logic
+- Vanilla JavaScript for overall structure and game logic
 - `three.js` and `THREEx` game extensions for 3D graphics and game physics
 - Webpack to bundle and serve up the various scripts
 

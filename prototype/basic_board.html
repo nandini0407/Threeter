@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>Threeter</title>
+		<style>
+			body { margin: 0 auto; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="../vendor/three.js"></script>
+    <script src="../vendor/cannon.js"></script>
+    <script src="../vendor/threex.cannonworld.js"></script>
+    <script src="../vendor/threex.cannonbody.js"></script>
+    <script src="../vendor/threex.keyboardstate.js"></script>
+    <script src="basic_board.js"></script>
+    <script>
+      // Init keyboardstate
+      var keyboard	= new THREEx.KeyboardState(document.body);
+      keyboard.domElement.setAttribute("tabIndex", "0");
+      keyboard.domElement.focus();
+
+      // Basic scene, camera and renderer
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.01, 1000);
+      camera.position.x	= 0;
+    	camera.position.y	= 6;
+    	camera.position.z	= 5;
+    	camera.lookAt( scene.position );
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize( window.innerWidth, window.innerHeight );
+      document.body.appendChild( renderer.domElement );
+
+      // Build physics world
+      var physicsWorld = new THREEx.CannonWorld();
+      physicsWorld.start();
+
+      var pMaterialBall	= new CANNON.Material('pMaterialBall');
+	    var pMaterialFloor	= new CANNON.Material('pMaterialFloor');
+      physicsWorld.world.addContactMaterial(new CANNON.ContactMaterial(
+    		pMaterialBall,
+    		pMaterialFloor,
+    		0.1, // Friction
+        0.2 // Bounciness
+    	));
+
+      // Add Lighting
+      let light = new THREE.Object3D();
+      scene.add(light);
+      buildLight(light);
+      // No physics for lighting
+
+      const tileW = 0.2; // Don't know why we need this
+
+      // Table
+      let table	= new THREE.Object3D();
+      // Add floor to table
+      let floor_mesh = buildFloor(-35*tileW, -20*tileW, 35*tileW, 20*tileW);
+      table.add(floor_mesh);
+      scene.add(table);
+      // Apply phyics to floor
+      let floor_body	= new THREEx.CannonBody({
+  			mesh: floor_mesh,
+  			mass: 0, // In kgs, floor needs to be static so zero mass
+  			material: pMaterialFloor,
+  			//cannon2three	: false
+  		}).addTo(physicsWorld);
+
+      // Add ball
+      let ball_mesh = addBall(1.5*tileW);
+      scene.add(ball_mesh);
+      var ball_body	= new THREEx.CannonBody({
+    		mesh: ball_mesh,
+        mass: 20,
+    		material: pMaterialBall
+    	}).addTo(physicsWorld);
+      ball_body.body.position.set(-15*tileW, 20*tileW, 0*tileW);
+
+      var lastTimeMsec = null;
+      let animate = function (nowMsec) {
+				requestAnimationFrame(animate);
+        lastTimeMsec	= lastTimeMsec || (nowMsec-1000/60);
+        var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec);
+        lastTimeMsec	= nowMsec;
+        updateBallPosition(keyboard, ball_body, deltaMsec);
+        floor_body.update(deltaMsec/1000, nowMsec/1000);
+        ball_body.update(deltaMsec/1000, nowMsec/1000);
+        renderer.render(scene, camera);
+      }
+      requestAnimationFrame(animate);
+    </script>
+  </body>
+</html>
