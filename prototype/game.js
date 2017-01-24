@@ -3,27 +3,27 @@ function updateBallPosition(keyboard, ball_body, deltaMsec) {
   let keypressed = false;
   if (keyboard.pressed('left')) {
     keypressed = true;
-    force.x = -1;
+    force.x = -0.2;
   }
   if (keyboard.pressed('right')) {
     keypressed = true;
-    force.x = +1;
+    force.x = +0.2;
   }
   if (keyboard.pressed('up')) {
     keypressed = true;
-    force.z	= -1;
+    force.z	= -0.2;
   }
   if (keyboard.pressed('down')) {
     keypressed = true;
-    force.z	= +1;
+    force.z	= +0.2;
   }
   if (keypressed == true) {
-    force.multiplyScalar(1);
+    force.multiplyScalar(1); // don't know why we need this
     ball_body.mesh.updateMatrixWorld();
-  	var deltaPos	= new THREE.Vector3().getPositionFromMatrix( ball_body.mesh.matrixWorld );
-    var forceAngle	= - Math.PI/2 - Math.atan2(deltaPos.z, deltaPos.x);
-    var matrix	= new THREE.Matrix4().makeRotationY( forceAngle );
-    force.applyMatrix4( matrix );
+  	// var deltaPos	= new THREE.Vector3().getPositionFromMatrix( ball_body.mesh.matrixWorld );
+    // var forceAngle	= - Math.PI/2 - Math.atan2(deltaPos.z, deltaPos.x);
+    // var matrix	= new THREE.Matrix4().makeRotationY( forceAngle );
+    // force.applyMatrix4( matrix );
     ball_body.applyImpulse(force, deltaMsec);
   }
 }
@@ -76,14 +76,36 @@ function buildLight(light) {
 }
 
 function addBall(radius) {
-  let texture = new THREE.TextureLoader().load( "../assets/textures/metalic.jpg" );
+  let texture = new THREE.TextureLoader().load( "../assets/textures/ball_texture.jpg" );
   let material	= new THREE.MeshPhongMaterial({
     map: texture
   });
-  let geometry	= new THREE.SphereGeometry(radius, 32, 32);
+  let geometry	= new THREE.SphereGeometry(radius, 64, 64);
 	let mesh	= new THREE.Mesh(geometry, material);
   mesh.position.y	= 2;
 	mesh.receiveShadow	= true;
+	mesh.castShadow		= true;
+  return mesh;
+}
+
+function addWall(x1, z1, x2, z2){
+  const width	= Math.abs(x2 - x1);
+  const height	= 0.5;
+  const depth	= Math.abs(z2 - z1);
+  let geometry	= new THREE.CubeGeometry(width, height, depth);
+  let texture = new THREE.TextureLoader().load( "../assets/textures/wood.jpg" );
+  let material	= new THREE.MeshPhongMaterial({
+    map	: texture
+  });
+  material.map.wrapS	= THREE.RepeatWrapping;
+	material.map.wrapT	= THREE.RepeatWrapping;
+	material.map.repeat.x	= 1/16;
+	material.map.repeat.y	= 1/16;
+  var mesh	= new THREE.Mesh(geometry, material)
+	mesh.position.x	= x1 + width /2;
+	mesh.position.y	= height/2;
+	mesh.position.z	= z1 + depth /2;
+  mesh.receiveShadow	= true;
 	mesh.castShadow		= true;
   return mesh;
 }
