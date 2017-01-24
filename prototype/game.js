@@ -1,4 +1,13 @@
-function updateBallPosition(keyboard, ball_body, deltaMsec) {
+function updateCameraPosition(camera, ball_body) {
+  camera.updateMatrixWorld();
+  ball_body.mesh.updateMatrixWorld();
+  camera.position.copy(ball_body.mesh.position);
+  var deltaCamera		= new THREE.Vector3(0,6,2);
+  camera.position.add(deltaCamera);
+  camera.lookAt(ball_body.mesh.position);
+}
+
+function updateBallPosition(keyboard, ball_body, nowMsec, deltaMsec) {
   let force	= new THREE.Vector3();
   let keypressed = false;
   if (keyboard.pressed('left')) {
@@ -22,6 +31,7 @@ function updateBallPosition(keyboard, ball_body, deltaMsec) {
     ball_body.mesh.updateMatrixWorld();
     ball_body.applyImpulse(force, deltaMsec);
   }
+  ball_body.update(deltaMsec/1000, nowMsec/1000);
 }
 
 function buildFloor(x1, z1, x2, z2) {
@@ -33,10 +43,10 @@ function buildFloor(x1, z1, x2, z2) {
   let material	= new THREE.MeshPhongMaterial({
     map		: texture
   });
-  // texture.wrapS	= THREE.RepeatWrapping;
-  // texture.wrapT	= THREE.RepeatWrapping;
-  // texture.repeat.x= 35;
-  // texture.repeat.y= 20;
+  texture.wrapS	= THREE.RepeatWrapping;
+  texture.wrapT	= THREE.RepeatWrapping;
+  texture.repeat.x= 35;
+  texture.repeat.y= 20;
   let mesh	= new THREE.Mesh(geometry, material);
   mesh.position.x	= x1 + width/2;
   mesh.position.y	= -height/2;

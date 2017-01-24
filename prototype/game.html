@@ -176,14 +176,16 @@
 				material: pMaterialWall
 			}).addTo(physicsWorld);
 
+			console.log("camera = ", camera);
+
       var lastTimeMsec = null;
       let animate = function (nowMsec) {
 				requestAnimationFrame(animate);  // async
         lastTimeMsec	= lastTimeMsec || (nowMsec-1000/60);
         var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec);
         lastTimeMsec	= nowMsec;
-        updateBallPosition(keyboard, ball_body, deltaMsec);
-        ball_body.update(deltaMsec/1000, nowMsec/1000);
+        updateBallPosition(keyboard, ball_body, nowMsec, deltaMsec);
+				updateCameraPosition(camera, ball_body);
         renderer.render(scene, camera);
       }
       requestAnimationFrame(animate);
