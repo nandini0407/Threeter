@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Threeter</title>
     <style media="screen">
-      canvas { width: 100%; height: 75% }
+      /*canvas { width: 100%; height: 75% }*/
       body {
 				margin: 0 auto;
 				font-family: 'Ubuntu', sans-serif;
@@ -19,9 +19,22 @@
 				color: white;
 				background: black;
 			}
-			ul { list-style: none }
+			h1 {
+				margin: 0 auto;
+				padding: 10px;
+			}
+			section {
+				width: 100%;
+				height: 75%;
+			}
+			ul {
+				list-style: none;
+				margin: 5px;
+			}
 			a {
 				color: white;
+				font-size: 12px;
+				margin: 5px;
 			}
     </style>
 		<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
@@ -42,7 +55,11 @@
 			<a href="https://github.com/nandini0407/Threeter/tree/master">Github</a>
 			<a href="www.linkedin.com/in/nandini-adhyapaka">LinkedIn</a>
 		</header>
-			<script type="text/javascript">
+		<section>
+
+				<script type="text/javascript">
+
+				let gameWon = false;
 
 				var keyboard = new THREEx.KeyboardState(document.body);
 				keyboard.domElement.setAttribute("tabIndex", "0");
@@ -120,6 +137,31 @@
 				ballBody.addTo(pWorld);
 				ballBody.body.linearDamping = 0.8;
 				ballBody.body.angularDamping = 0.9;
+
+				ballBody.body.addEventListener('collide', (event) => {
+					if (event.with.userData.object3d.name === "obstacle") {
+						// reset ball position
+						ballBody.body.position.set(-5.3, 2, 3.5);
+						ballBody.update(deltaMsec/1000, nowMsec/1000);
+					} else if (event.with.userData.object3d.name === "home") {
+						gameWon = true;
+						let loader = new THREE.FontLoader();
+						loader.load('helvetiker_regular.typeface.json', (font) => {
+							let geometry = new THREE.TextGeometry("You win!", { font: font, size: 1, height: 0.2});
+							let material = new THREE.MeshPhongMaterial({
+								color: 0x0000FF,
+								overdraw: 0.5
+							});
+							let text = new THREE.Mesh(geometry,material);
+							mesh.position.x = -6;
+							mesh.position.y = 1;
+							mesh.position.z = 0;
+							mesh.receiveShadow = true;
+							mesh.castShadow = true;
+							scene.add(mesh);
+						});
+					}
+				});
 
 				var leftWall = makeWall(-6, -4, -5.8, 4);
 				scene.add(leftWall);
@@ -253,7 +295,7 @@
 
 				var rotatingCubes = [ rotatingCube1Body ];
 
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize( window.innerWidth, window.innerHeight - 140, false );
 				document.body.appendChild( renderer.domElement );
 				window.addEventListener( 'resize', onWindowResize, false );
 
@@ -288,10 +330,11 @@
 				function onWindowResize() {
 					camera.aspect = window.innerWidth / window.innerHeight;
 					camera.updateProjectionMatrix();
-					renderer.setSize( window.innerWidth, window.innerHeight );
+					renderer.setSize( window.innerWidth, window.innerHeight - 140, false );
 					render();
 				}
 
 			</script>
+		</section>
   </body>
 </html>
