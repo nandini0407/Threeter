@@ -52,6 +52,11 @@
 
       var floor = makeFloor(-6, -4, 6, 4);
       scene.add(floor);
+			let floorShape = new CANNON.Box(new CANNON.Vec3(
+				floor.geometry.parameters.width,
+				floor.geometry.parameters.height/2,
+				floor.geometry.parameters.depth/2
+			));
 
       var ball = makeBall(0.2);
       scene.add(ball);
@@ -86,8 +91,13 @@
 			var sphericalObstacle3 = makeSphericalObstacle(0.4, 2.7, -1.6);
 			scene.add(sphericalObstacle3);
 
-			var homeBall = makeHomeBall(0.4, 4, 3.5);
+			var homeBall = makeHomeBall(0.4, 4.3, 3.4);
 			scene.add(homeBall);
+
+			var rotatingCubePos = [];
+			var rotatingCube1 = makeRotatingCube(-4.8, -0.1, -3.8, 0.1);
+			scene.add(rotatingCube1);
+			rotatingCubePos.push({ x: -4.3, z: 0});
 
       var pMaterialFloor = new CANNON.Material('pMaterialFloor');
       var pMaterialBall = new CANNON.Material('pMaterialBall');
@@ -123,6 +133,7 @@
 			));
 
       var floorBody = new THREEx.CannonBody({
+				shape: floorShape,
         mesh: floor,
         mass: 0,
         material: pMaterialFloor
@@ -225,6 +236,17 @@
 			homeBallBody.body.linearDamping = 0.8;
       homeBallBody.body.angularDamping = 0.9;
 
+			var rotatingCube1Body = new THREEx.CannonBody({
+				mesh: rotatingCube1,
+				mass: 200,
+				material: pMaterialObstacle
+			});
+			rotatingCube1Body.addTo(pWorld);
+			rotatingCube1Body.body.linearDamping = 0.8;
+			rotatingCube1Body.body.angularDamping = 0.9;
+
+			var rotatingCubes = [ rotatingCube1Body ];
+
       renderer.setSize( window.innerWidth, window.innerHeight );
       document.body.appendChild( renderer.domElement );
       window.addEventListener( 'resize', onWindowResize, false );
@@ -238,8 +260,14 @@
         lastTimeMsec	= lastTimeMsec || (nowMsec-1000/60);
         var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec);
         lastTimeMsec	= nowMsec;
+				floorBody.update(deltaMsec/1000, nowMsec/1000);
+				rotatingCubes.forEach((body, idx) => {
+					body.body.position.x = rotatingCubePos[idx].x;
+					body.body.position.z = rotatingCubePos[idx].z;
+					body.body.angularVelocity.set(0, 5, 0);
+					body.update(deltaMsec/1000, nowMsec/1000);
+				});
         moveBall(keyboard, ballBody, nowMsec, deltaMsec);
-				// updateCameraPosition(camera, ballBody);
         renderer.render(scene, camera);
       }
       requestAnimationFrame(animate);
