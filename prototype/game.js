@@ -43,10 +43,10 @@ function buildFloor(x1, z1, x2, z2) {
   let material	= new THREE.MeshPhongMaterial({
     map		: texture
   });
-  texture.wrapS	= THREE.RepeatWrapping;
-  texture.wrapT	= THREE.RepeatWrapping;
-  texture.repeat.x= 35;
-  texture.repeat.y= 20;
+  // texture.wrapS	= THREE.RepeatWrapping;
+  // texture.wrapT	= THREE.RepeatWrapping;
+  // texture.repeat.x= 35;
+  // texture.repeat.y= 20;
   let mesh	= new THREE.Mesh(geometry, material);
   mesh.position.x	= x1 + width/2;
   mesh.position.y	= -height/2;
