@@ -5,8 +5,14 @@
     <title>Threeter</title>
     <style media="screen">
       canvas { width: 100%; height: 100% }
-      body { margin: 0 auto; }
+      body {
+				margin: 0 auto;
+				font-family: 'Ubuntu', sans-serif;
+			}
+			header { text-align: center; }
+			ul { list-style: none }
     </style>
+		<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
     <script src='./vendor/three.js'></script>
     <script src='./lib/game.js'></script>
     <script src="./vendor/cannon.js"></script>
@@ -15,7 +21,15 @@
     <script src="./vendor/threex.keyboardstate.js"></script>
   </head>
   <body>
-    <h1>Threeter</h1>
+		<header>
+			<h1>Threeter</h1>
+			<ul>
+				<li>Use arrow keys to move ball towards the green home ball</li>
+				<li>Avoid contact with obstacles</li>
+			</ul>
+			<a href="https://github.com/nandini0407/Threeter/tree/master">Github</a>
+			<a href="www.linkedin.com/in/nandini-adhyapaka">LinkedIn</a>
+		</header>
     <script type="text/javascript">
 
       var keyboard = new THREEx.KeyboardState(document.body);
@@ -54,21 +68,59 @@
       var topWall = makeWall(-6, -4.2, 6, -4);
       scene.add(topWall);
 
+			var midLeftWall = makeWall(-3.1, -1.8, -2.9, 3.8);
+			scene.add(midLeftWall);
+
+			var midWall = makeWall(-0.1, -3.8, 0.1, 1.8);
+			scene.add(midWall);
+
+			var midRightWall = makeWall(2.9, -1.8, 3.1, 3.8);
+			scene.add(midRightWall);
+
+			var sphericalObstacle1 = makeSphericalObstacle(0.4, -2.7, -1.6);
+			scene.add(sphericalObstacle1);
+
+			var sphericalObstacle2 = makeSphericalObstacle(0.4, 0, 2.7);
+			scene.add(sphericalObstacle2);
+
+			var sphericalObstacle3 = makeSphericalObstacle(0.4, 2.7, -1.6);
+			scene.add(sphericalObstacle3);
+
+			var homeBall = makeHomeBall(0.4, 4, 3.5);
+			scene.add(homeBall);
+
       var pMaterialFloor = new CANNON.Material('pMaterialFloor');
       var pMaterialBall = new CANNON.Material('pMaterialBall');
       var pMaterialWall = new CANNON.Material('pMaterialWall');
+			var pMaterialObstacle = new CANNON.Material('pMaterialObstacle');
 
       pWorld.world.addContactMaterial(new CANNON.ContactMaterial(
-        pMaterialBall, pMaterialFloor, 0.1, 0.2
+        pMaterialBall, pMaterialFloor, 0.2, 0.1
       ));
 
       pWorld.world.addContactMaterial(new CANNON.ContactMaterial(
-        pMaterialBall, pMaterialWall, 0.1, 0.2
+        pMaterialBall, pMaterialWall, 0.2, 0.1
       ));
 
       pWorld.world.addContactMaterial(new CANNON.ContactMaterial(
-        pMaterialWall, pMaterialFloor, 0.1, 0.2
+        pMaterialWall, pMaterialFloor, 0.2, 0.1
       ));
+
+			pWorld.world.addContactMaterial(new CANNON.ContactMaterial(
+				pMaterialBall, pMaterialObstacle, 10, 0
+			));
+
+			pWorld.world.addContactMaterial(new CANNON.ContactMaterial(
+				pMaterialObstacle, pMaterialFloor, 0.01, 0.1
+			));
+
+			pWorld.world.addContactMaterial(new CANNON.ContactMaterial(
+				pMaterialObstacle, pMaterialWall, 0, 0
+			));
+
+			pWorld.world.addContactMaterial(new CANNON.ContactMaterial(
+				pMaterialObstacle, pMaterialObstacle, 0, 0
+			));
 
       var floorBody = new THREEx.CannonBody({
         mesh: floor,
@@ -113,6 +165,65 @@
         material: pMaterialWall
       });
       topWallBody.addTo(pWorld);
+
+			var midLeftWallBody = new THREEx.CannonBody({
+        mesh: midLeftWall,
+        mass: 0,
+        material: pMaterialWall
+      });
+      midLeftWallBody.addTo(pWorld);
+
+			var midWallBody = new THREEx.CannonBody({
+        mesh: midWall,
+        mass: 0,
+        material: pMaterialWall
+      });
+      midWallBody.addTo(pWorld);
+
+			var midRightWallBody = new THREEx.CannonBody({
+        mesh: midRightWall,
+        mass: 0,
+        material: pMaterialWall
+      });
+      midRightWallBody.addTo(pWorld);
+
+			var sphericalObstacle1Body = new THREEx.CannonBody({
+				mesh: sphericalObstacle1,
+				mass: 300,
+				material: pMaterialObstacle
+			});
+			sphericalObstacle1Body.addTo(pWorld);
+			sphericalObstacle1Body.body.linearDamping = 0.8;
+      sphericalObstacle1Body.body.angularDamping = 0.9;
+
+			var sphericalObstacle2Body = new THREEx.CannonBody({
+				mesh: sphericalObstacle2,
+				mass: 300,
+				material: pMaterialObstacle
+			});
+			sphericalObstacle2Body.addTo(pWorld);
+			sphericalObstacle2Body.body.linearDamping = 0.8;
+      sphericalObstacle2Body.body.angularDamping = 0.9;
+
+			var sphericalObstacle3Body = new THREEx.CannonBody({
+				mesh: sphericalObstacle3,
+				mass: 300,
+				material: pMaterialObstacle
+			});
+			sphericalObstacle3Body.addTo(pWorld);
+			sphericalObstacle3Body.body.linearDamping = 0.8;
+      sphericalObstacle3Body.body.angularDamping = 0.9;
+
+			var sphericalObstacles = [ sphericalObstacle1Body, sphericalObstacle2Body, sphericalObstacle3Body ];
+
+			var homeBallBody = new THREEx.CannonBody({
+				mesh: homeBall,
+				mass: 300,
+				material: pMaterialObstacle
+			});
+			homeBallBody.addTo(pWorld);
+			homeBallBody.body.linearDamping = 0.8;
+      homeBallBody.body.angularDamping = 0.9;
 
       renderer.setSize( window.innerWidth, window.innerHeight );
       document.body.appendChild( renderer.domElement );
