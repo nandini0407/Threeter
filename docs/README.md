@@ -24,9 +24,8 @@ This project will be implemented using the following technologies:
 
 - Vanilla JavaScript for overall structure and game logic
 - `three.js` and `THREEx` game extensions for 3D graphics and game physics
-- Webpack to bundle and serve up the various scripts
 
-In addition to the webpack entry file, there will be the following scripts:
+The following files will be created:
 
 - `game.js`: This script is responsible for instantiating the map on the board and starts the game loop/render loop.
 - `board.js`: This is the game board, on which other objects are built.
