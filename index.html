@@ -70,7 +70,7 @@
     	camera.position.z	= 5;
     	camera.lookAt( scene.position );
       var renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize( window.innerWidth, window.innerHeight );
+      renderer.setSize( window.innerWidth, window.innerHeight - 130 );
       document.body.appendChild( renderer.domElement );
 
       // Build physics world
@@ -83,7 +83,7 @@
       buildLight(light);
       // No physics for lighting
 
-      const tileW = 0.2; // for scaling down
+      const multiplier = 0.2; // for scaling down
 
 			var pMaterialBall	= new CANNON.Material('pMaterialBall');
 			var pMaterialFloor	= new CANNON.Material('pMaterialFloor');
@@ -126,19 +126,13 @@
 				0 // Bounciness
 			));
 
-
-      // Table
-      // let table	= new THREE.Object3D();
-      // Add floor to table
-      let floor_mesh = buildFloor(-35*tileW, -20*tileW, 35*tileW, 20*tileW);
-      // table.add(floor_mesh);
+      let floor_mesh = buildFloor(-35*multiplier, -20*multiplier, 35*multiplier, 20*multiplier);
       scene.add(floor_mesh);
       // Apply phyics to floor
 			let floor_shape = new CANNON.Box(new CANNON.Vec3(
 				floor_mesh.geometry.parameters.width,
 				floor_mesh.geometry.parameters.height/2,
 				floor_mesh.geometry.parameters.depth/2));
-			console.log("floor_mesh =", floor_mesh);
       let floor_body	= new THREEx.CannonBody({
 				shape: floor_shape,
   			mesh: floor_mesh,
@@ -147,50 +141,49 @@
   		}).addTo(physicsWorld);
 
       // Add ball
-      let ball_mesh = buildBall(1*tileW);
+      let ball_mesh = buildBall(1*multiplier);
       scene.add(ball_mesh);
       var ball_body	= new THREEx.CannonBody({
     		mesh: ball_mesh,
         mass: 20,
     		material: pMaterialBall
     	}).addTo(physicsWorld);
-      ball_body.body.position.set(-30*tileW, 1*tileW, 17*tileW);
+      ball_body.body.position.set(-30*multiplier, 1*multiplier, 17*multiplier);
 			ball_body.body.linearDamping = 0.8;
 			ball_body.body.angularDamping	= 0.9;
 
+			var text_mesh = null;
 			ball_body.body.addEventListener("collide", function(event) {
 				if (event.with.userData.object3d.name == "obstacle") {
 					// reset the ball position
-					ball_body.body.position.set(-30*tileW, 1*tileW, 17*tileW);
+					ball_body.body.position.set(-30*multiplier, 1*multiplier, 17*multiplier);
 					ball_body.update(deltaMsec/1000, nowMsec/1000);
 				}
 				if (event.with.userData.object3d.name == "home") {
 					gameWon = true;
 					let loader = new THREE.FontLoader();
 					loader.load('./assets/fonts/helvetiker_bold.typeface.json', function (font) {
-						console.log("font = ", font);
-						let geometry = new THREE.TextGeometry("You win!", {font: font, size: 1, height: 0.2});
-						console.log("geometry = ", geometry);
+						let geometry = new THREE.TextGeometry("You win! (space to restart)", {font: font, size: 1, height: 0.2});
 						let material	= new THREE.MeshPhongMaterial({
-							color: 0x0000FF,
+							color: 0x42f480,
 							overdraw: 0.5
 						});
-						let mesh	= new THREE.Mesh(geometry, material);
-						mesh.position.y = 5*tileW;
-						mesh.position.x = -25*tileW;
-						mesh.position.z = 0;
-						mesh.rotation.x = -Math.PI / 2.5;
+						text_mesh	= new THREE.Mesh(geometry, material);
+						text_mesh.position.y = 5*multiplier;
+						text_mesh.position.x = -25*multiplier;
+						text_mesh.position.z = 0;
+						text_mesh.rotation.x = -Math.PI / 2.5;
 						camera.position.x	= 0;
 						camera.position.y	= 6;
 						camera.position.z	= 5;
-						scene.add(mesh);
+						scene.add(text_mesh);
 					});
 				}
 			});
 
 			//Add walls
 			//left boundary wall
-			let wall_mesh_left = buildWall(-34.5*tileW - tileW/2,-19.5*tileW - tileW/2,-34.5*tileW + tileW/2, 19.5*tileW + tileW/2);
+			let wall_mesh_left = buildWall(-34.5*multiplier - multiplier/2,-19.5*multiplier - multiplier/2,-34.5*multiplier + multiplier/2, 19.5*multiplier + multiplier/2);
 			scene.add(wall_mesh_left);
 			var wall_body_left	= new THREEx.CannonBody({
 				mesh	: wall_mesh_left,
@@ -199,7 +192,7 @@
 			}).addTo(physicsWorld);
 
 			// right boundary wall
-			let wall_mesh_right = buildWall(34.5*tileW - tileW/2,-19.5*tileW - tileW/2,34.5*tileW + tileW/2, 19.5*tileW + tileW/2);
+			let wall_mesh_right = buildWall(34.5*multiplier - multiplier/2,-19.5*multiplier - multiplier/2,34.5*multiplier + multiplier/2, 19.5*multiplier + multiplier/2);
 			scene.add(wall_mesh_right);
 			var wall_body_right	= new THREEx.CannonBody({
 				mesh	: wall_mesh_right,
@@ -208,7 +201,7 @@
 			}).addTo(physicsWorld);
 
 			// top boundary wall
-			let wall_mesh_bottom = buildWall(-34.5*tileW - tileW/2,-19.5*tileW - tileW/2,34.5*tileW + tileW/2, -19.5*tileW + tileW/2);
+			let wall_mesh_bottom = buildWall(-34.5*multiplier - multiplier/2,-19.5*multiplier - multiplier/2,34.5*multiplier + multiplier/2, -19.5*multiplier + multiplier/2);
 			scene.add(wall_mesh_bottom);
 			var wall_body3	= new THREEx.CannonBody({
 				mesh	: wall_mesh_bottom,
@@ -217,7 +210,7 @@
 			}).addTo(physicsWorld);
 
 			// bottom boundary wall
-			let wall_mesh_top = buildWall(-33.5*tileW - tileW/2, 19.5*tileW - tileW/2,33.5*tileW + tileW/2, 19.5*tileW + tileW/2);
+			let wall_mesh_top = buildWall(-33.5*multiplier - multiplier/2, 19.5*multiplier - multiplier/2,33.5*multiplier + multiplier/2, 19.5*multiplier + multiplier/2);
 			scene.add(wall_mesh_top);
 			var wall_body4	= new THREEx.CannonBody({
 				mesh	: wall_mesh_top,
@@ -226,21 +219,21 @@
 			}).addTo(physicsWorld);
 
 			// 3 middle blocking walls
-			let wall_mesh1 = buildWall(20*tileW - tileW/2,-8*tileW - tileW/2,20*tileW + tileW/2, 18*tileW + tileW/2);
+			let wall_mesh1 = buildWall(20*multiplier - multiplier/2,-8*multiplier - multiplier/2,20*multiplier + multiplier/2, 18*multiplier + multiplier/2);
 			scene.add(wall_mesh1);
 			var wall_body1	= new THREEx.CannonBody({
 				mesh	: wall_mesh1,
 				mass	: 0,
 				material: pMaterialWall
 			}).addTo(physicsWorld);
-			let wall_mesh2 = buildWall(4*tileW - tileW/2,-18*tileW - tileW/2,4*tileW + tileW/2, 8*tileW + tileW/2);
+			let wall_mesh2 = buildWall(4*multiplier - multiplier/2,-18*multiplier - multiplier/2,4*multiplier + multiplier/2, 8*multiplier + multiplier/2);
 			scene.add(wall_mesh2);
 			var wall_body2	= new THREEx.CannonBody({
 				mesh	: wall_mesh2,
 				mass	: 0,
 				material: pMaterialWall
 			}).addTo(physicsWorld);
-			let wall_mesh3 = buildWall(-12*tileW - tileW/2,-8*tileW - tileW/2,-12*tileW + tileW/2, 18*tileW + tileW/2);
+			let wall_mesh3 = buildWall(-12*multiplier - multiplier/2,-8*multiplier - multiplier/2,-12*multiplier + multiplier/2, 18*multiplier + multiplier/2);
 			scene.add(wall_mesh3);
 			var wall_body3	= new THREEx.CannonBody({
 				mesh	: wall_mesh3,
@@ -250,7 +243,7 @@
 
 			// Add sphere obstacles
 			var static_obstacles = [];
-			let obst_ball_mesh1 = buildObstacleBall(4*tileW, 10*tileW, 12*tileW);
+			let obst_ball_mesh1 = buildObstacleBall(4*multiplier, 10*multiplier, 12*multiplier);
 			scene.add(obst_ball_mesh1);
 			var obst_ball_body1 = new THREEx.CannonBody({
 				mesh	: obst_ball_mesh1,
@@ -261,7 +254,7 @@
 			obst_ball_body1.body.angularDamping	= 0.9;
 			static_obstacles.push(obst_ball_body1);
 
-			let obst_ball_mesh2 = buildObstacleBall(3*tileW, 28*tileW, -12*tileW);
+			let obst_ball_mesh2 = buildObstacleBall(3*multiplier, 28*multiplier, -12*multiplier);
 			scene.add(obst_ball_mesh2);
 			var obst_ball_body2 = new THREEx.CannonBody({
 				mesh	: obst_ball_mesh2,
@@ -272,7 +265,7 @@
 			obst_ball_body2.body.angularDamping	= 0.9;
 			static_obstacles.push(obst_ball_body2);
 
-			let obst_ball_mesh3 = buildObstacleBall(3*tileW, -12*tileW, -12*tileW);
+			let obst_ball_mesh3 = buildObstacleBall(3*multiplier, -12*multiplier, -12*multiplier);
 			scene.add(obst_ball_mesh3);
 			var obst_ball_body3 = new THREEx.CannonBody({
 				mesh	: obst_ball_mesh3,
@@ -287,8 +280,8 @@
 			var cube_rotate_obstacles = [];
 			var cube_obstacle_pos = [];
 
-			let obst_cube_pos1 = {x: 14*tileW, z: -10*tileW};
-			let obst_cube_mesh1 = buildObstacleCube(2*tileW, 1*tileW, 7*tileW, obst_cube_pos1.x, obst_cube_pos1.z);
+			let obst_cube_pos1 = {x: 14*multiplier, z: -10*multiplier};
+			let obst_cube_mesh1 = buildObstacleCube(2*multiplier, 1*multiplier, 7*multiplier, obst_cube_pos1.x, obst_cube_pos1.z);
 			scene.add(obst_cube_mesh1);
 			let obst_cube_body1 = new THREEx.CannonBody({
 				mesh	: obst_cube_mesh1,
@@ -298,8 +291,8 @@
 			cube_rotate_obstacles.push(obst_cube_body1);
 			cube_obstacle_pos.push(obst_cube_pos1);
 
-			let obst_cube_pos2 = {x: -2*tileW, z: -6*tileW};
-			let obst_cube_mesh2 = buildObstacleCube(2*tileW, 1*tileW, 8*tileW, obst_cube_pos2.x, obst_cube_pos2.z);
+			let obst_cube_pos2 = {x: -2*multiplier, z: -6*multiplier};
+			let obst_cube_mesh2 = buildObstacleCube(2*multiplier, 1*multiplier, 8*multiplier, obst_cube_pos2.x, obst_cube_pos2.z);
 			scene.add(obst_cube_mesh2);
 			let obst_cube_body2 = new THREEx.CannonBody({
 				mesh	: obst_cube_mesh2,
@@ -309,8 +302,8 @@
 			cube_rotate_obstacles.push(obst_cube_body2);
 			cube_obstacle_pos.push(obst_cube_pos2);
 
-			let obst_cube_pos3 = {x: -24*tileW, z: -6*tileW};
-			let obst_cube_mesh3 = buildObstacleCube(4*tileW, 2*tileW, 7*tileW, obst_cube_pos3.x, obst_cube_pos3.z);
+			let obst_cube_pos3 = {x: -24*multiplier, z: -6*multiplier};
+			let obst_cube_mesh3 = buildObstacleCube(4*multiplier, 2*multiplier, 7*multiplier, obst_cube_pos3.x, obst_cube_pos3.z);
 			scene.add(obst_cube_mesh3);
 			let obst_cube_body3 = new THREEx.CannonBody({
 				mesh	: obst_cube_mesh3,
@@ -320,7 +313,7 @@
 			cube_rotate_obstacles.push(obst_cube_body3);
 			cube_obstacle_pos.push(obst_cube_pos3);
 
-			let home_ball_mesh = buildHomeBall(2*tileW, 28*tileW, 16*tileW);
+			let home_ball_mesh = buildHomeBall(2*multiplier, 28*multiplier, 16*multiplier);
 			scene.add(home_ball_mesh);
 			var home_ball_body = new THREEx.CannonBody({
 				mesh	: home_ball_mesh,
@@ -351,11 +344,18 @@
 					});
 					updateBallPosition(keyboard, ball_body, nowMsec, deltaMsec);
 					if (ball_body.mesh.position.y < -0.5 || ball_body.mesh.position.y > 0.5) {
-						ball_body.body.position.set(-30*tileW, 1*tileW, 17*tileW);
+						ball_body.body.position.set(-30*multiplier, 1*multiplier, 17*multiplier);
 						ball_body.update(deltaMsec/1000, nowMsec/1000);
 					}
-					obst_cube_body3.update(deltaMsec/1000, nowMsec/1000);
-			  }
+			  } else {
+					if (keyboard.pressed('space')) {
+						gameWon = false;
+						lastTimeMsec = null;
+						ball_body.body.position.set(-30*tileW, 1*tileW, 17*tileW);
+						ball_body.update(deltaMsec/1000, nowMsec/1000);
+						scene.remove(text_mesh);
+					}
+				}
         renderer.render(scene, camera);
       }
       requestAnimationFrame(animate);
