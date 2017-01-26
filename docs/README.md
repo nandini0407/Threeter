@@ -27,13 +27,8 @@ This project will be implemented using the following technologies:
 
 The following files will be created:
 
-- `game.js`: This script is responsible for instantiating the map on the board and starts the game loop/render loop.
-- `board.js`: This is the game board, on which other objects are built.
-- `ball.js`: A single ball for the game which reacts to player's keyboard input.
-- `wall.js`: Generates a wall of given dimensions on the board.
-- `destination.js`: Generates a location on the board, which ends the game in a win if the ball hits this.
-- `hole.js`: Creates different locations on the board which trap the ball and end the game with a loss.
-- `map.js`: Builds a single map of walls and holes on the board.
+- `game.js`: This script is responsible for instantiating the map on the board.
+- `index.html`: Contains the game logic and renders the board and its objects.
 
 ### Implementation Timeline
 
@@ -50,7 +45,7 @@ The following files will be created:
 **Day 3**:
 
 - Build map and game classes
-- Render nav links and help modal
+- Render nav links
 
 **Day 4**:
 
