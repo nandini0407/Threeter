@@ -3,40 +3,7 @@
 	<head>
 		<meta charset=utf-8>
 		<title>Threeter</title>
-		<style>
-			body {
-				margin: 0 auto;
-				font-family: 'Ubuntu', sans-serif;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				background: black;
-			}
-			header {
-				text-align: center;
-				height: 25%;
-				color: white;
-				background: black;
-				margin-bottom: 3px;
-			}
-			h1 {
-				margin: 0 auto;
-				padding: 10px;
-			}
-			section {
-				width: 100%;
-				height: 75%;
-			}
-			ul {
-				list-style: none;
-				margin: 5px;
-			}
-			a {
-				color: white;
-				font-size: 12px;
-				margin: 5px;
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" href="./assets/stylesheets/application.css">
 		<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
 		<script src="./vendor/three.js"></script>
 		<script src="./vendor/cannon.js"></script>
@@ -49,7 +16,7 @@
 		<header>
 			<h1>Threeter</h1>
 			<ul>
-				<li>Use arrow keys to move ball towards the green home ball</li>
+				<li>Use arrow keys to move small brown ball towards big brown ball</li>
 				<li>Avoid contact with obstacles</li>
 			</ul>
 			<a href="https://github.com/nandini0407/Threeter/tree/master">Github</a>
@@ -57,7 +24,7 @@
 		</header>
     <script>
 			let gameWon = false;
-      // Init keyboardstate
+      // Initialize keyboardstate
       var keyboard	= new THREEx.KeyboardState(document.body);
       keyboard.domElement.setAttribute("tabIndex", "0");
       keyboard.domElement.focus();
@@ -162,15 +129,15 @@
 				if (event.with.userData.object3d.name == "home") {
 					gameWon = true;
 					let loader = new THREE.FontLoader();
-					loader.load('./assets/fonts/helvetiker_bold.typeface.json', function (font) {
-						let geometry = new THREE.TextGeometry("You win! (space to restart)", {font: font, size: 1, height: 0.2});
+					loader.load('./assets/fonts/optimer_bold.typeface.json', function (font) {
+						let geometry = new THREE.TextGeometry("You win! (press space to play again)", {font: font, size: 0.4, height: 0.1});
 						let material	= new THREE.MeshPhongMaterial({
-							color: 0x42f480,
+							color: 0x5bcc39,
 							overdraw: 0.5
 						});
 						text_mesh	= new THREE.Mesh(geometry, material);
 						text_mesh.position.y = 5*multiplier;
-						text_mesh.position.x = -25*multiplier;
+						text_mesh.position.x = -22*multiplier;
 						text_mesh.position.z = 0;
 						text_mesh.rotation.x = -Math.PI / 2.5;
 						camera.position.x	= 0;
@@ -351,7 +318,7 @@
 					if (keyboard.pressed('space')) {
 						gameWon = false;
 						lastTimeMsec = null;
-						ball_body.body.position.set(-30*tileW, 1*tileW, 17*tileW);
+						ball_body.body.position.set(-30*multiplier, 1*multiplier, 17*multiplier);
 						ball_body.update(deltaMsec/1000, nowMsec/1000);
 						scene.remove(text_mesh);
 					}
