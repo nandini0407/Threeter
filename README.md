@@ -24,4 +24,4 @@ Different types of obstacles will be added at more points on the board.
 
 ### Score
 
-A score will be rendered as a measure of the time taken from start to finish.
+A score will be rendered as a measure of time taken from start to finish.

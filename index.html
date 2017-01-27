@@ -19,8 +19,8 @@
 				<li>Use arrow keys to move small brown ball towards big brown ball</li>
 				<li>Avoid contact with obstacles</li>
 			</ul>
-			<a href="https://github.com/nandini0407/Threeter/tree/master">Github</a>
-			<a href="www.linkedin.com/in/nandini-adhyapaka">LinkedIn</a>
+			<a href="https://github.com/nandini0407/Threeter/tree/master">Github</i></a>
+			<a href="www.linkedin.com/in/nandini-adhyapaka">LinkedIn</i></a>
 		</header>
     <script>
 			let gameWon = false;
@@ -30,15 +30,25 @@
       keyboard.domElement.focus();
 
       // Basic scene, camera and renderer
+			var camera;
       var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.01, 1000);
-      camera.position.x	= 0;
-    	camera.position.y	= 6;
-    	camera.position.z	= 5;
-    	camera.lookAt( scene.position );
+      var camera1 = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.01, 1000);
+      camera1.position.x	= 0;
+    	camera1.position.y	= 6;
+    	camera1.position.z	= 5;
+    	camera1.lookAt( scene.position );
       var renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize( window.innerWidth, window.innerHeight - 130 );
       document.body.appendChild( renderer.domElement );
+
+			var camera2 = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.01, 1000);
+			camera2.position.x	= 0;
+    	camera2.position.y	= 6;
+    	camera2.position.z	= 5;
+			camera2.lookAt(scene.position);
+
+			// Initially camera is camera1
+			camera = camera1;
 
       // Build physics world
       var physicsWorld = new THREEx.CannonWorld();
@@ -299,10 +309,9 @@
         lastTimeMsec	= nowMsec;
 				if (!gameWon) {
 					floor_body.update(deltaMsec/1000, nowMsec/1000);
-					updateCameraPosition(camera, ball_body);
 					cube_rotate_obstacles.forEach(function(body, idx) {
-					  body.body.position.x = cube_obstacle_pos[idx].x
-					  body.body.position.z = cube_obstacle_pos[idx].z;
+						body.body.position.x = cube_obstacle_pos[idx].x
+						body.body.position.z = cube_obstacle_pos[idx].z;
 						body.body.angularVelocity.set(0,5,0);
 						body.update(deltaMsec/1000, nowMsec/1000);
 					});
@@ -310,6 +319,10 @@
 						body.update(deltaMsec/1000, nowMsec/1000);
 					});
 					updateBallPosition(keyboard, ball_body, nowMsec, deltaMsec);
+					if (keyboard.pressed('left') || keyboard.pressed('right') || keyboard.pressed('up') || keyboard.pressed('down')) {
+						camera = camera2;
+					}
+					updateCameraPosition(camera2, ball_body);
 					if (ball_body.mesh.position.y < -0.5 || ball_body.mesh.position.y > 0.5) {
 						ball_body.body.position.set(-30*multiplier, 1*multiplier, 17*multiplier);
 						ball_body.update(deltaMsec/1000, nowMsec/1000);
