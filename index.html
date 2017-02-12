@@ -10,6 +10,7 @@
 		<script src="./vendor/threex.cannonworld.js"></script>
 		<script src="./vendor/threex.cannonbody.js"></script>
 		<script src="./vendor/threex.keyboardstate.js"></script>
+		<script src="./vendor/SPE.js"></script>
 		<script src="./lib/game.js"></script>
 	</head>
 	<body>
@@ -130,11 +131,20 @@
 			ball_body.body.angularDamping	= 0.9;
 
 			var text_mesh = null;
+			var smokeGroup = [];
 			ball_body.body.addEventListener("collide", function(event) {
 				if (event.with.userData.object3d.name == "obstacle") {
+					// get ball position
+					let x = ball_body.body.position.x;
+					let y = ball_body.body.position.y;
+					let z = ball_body.body.position.z;
 					// reset the ball position
 					ball_body.body.position.set(-30*multiplier, 1*multiplier, 17*multiplier);
-					ball_body.update(deltaMsec/1000, nowMsec/1000);
+					//ball_body.update(deltaMsec/1000, nowMsec/1000);
+					// create smoke
+					smoke = buildSmoke(x, y, z);
+					scene.add(smoke.mesh);
+					smokeGroup.push(smoke);
 				}
 				if (event.with.userData.object3d.name == "home") {
 					gameWon = true;
@@ -327,6 +337,9 @@
 						ball_body.body.position.set(-30*multiplier, 1*multiplier, 17*multiplier);
 						ball_body.update(deltaMsec/1000, nowMsec/1000);
 					}
+					smokeGroup.forEach(function(smoke) {
+						smoke.tick(deltaMsec/1000);
+					});
 			  } else {
 					if (keyboard.pressed('space')) {
 						gameWon = false;
@@ -334,6 +347,9 @@
 						ball_body.body.position.set(-30*multiplier, 1*multiplier, 17*multiplier);
 						ball_body.update(deltaMsec/1000, nowMsec/1000);
 						scene.remove(text_mesh);
+						smokeGroup.forEach(function(smoke) {
+							scene.remove(smoke.mesh);
+						});
 					}
 				}
         renderer.render(scene, camera);
