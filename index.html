@@ -357,6 +357,13 @@
 						body.update(deltaMsec/1000, nowMsec/1000);
 					});
 
+					// if the ball flies off the board on contact with any obstacle, then we need to
+					// bring it back to the starting position
+					if (ball_body.mesh.position.y < -0.5 || ball_body.mesh.position.y > 0.5) {
+						ball_body.body.position.set(-30*mul, 1*mul, 17*mul);
+						ball_body.update(deltaMsec/1000, nowMsec/1000);
+					}
+
 					updateBallPosition(keyboard, ball_body, nowMsec, deltaMsec);
 
 					if (keyboard.pressed('left') || keyboard.pressed('right') || keyboard.pressed('up') || keyboard.pressed('down')) {
@@ -364,10 +371,6 @@
 					}
 
 					updateCameraPosition(camera2, ball_body);
-					if (ball_body.mesh.position.y < -0.5 || ball_body.mesh.position.y > 0.5) {
-						ball_body.body.position.set(-30*mul, 1*mul, 17*mul);
-						ball_body.update(deltaMsec/1000, nowMsec/1000);
-					}
 
 					smokeGroup.forEach(function(smoke) {
 						smoke.tick(deltaMsec/1000);
@@ -379,7 +382,6 @@
 						lastTimeMsec = null;
 
 						ball_body.body.position.set(-30*mul, 1*mul, 17*mul);
-						// ball_body.update(deltaMsec/1000, nowMsec/1000);
 						scene.remove(text_mesh);
 
 						smokeGroup.forEach(function(smoke) {
