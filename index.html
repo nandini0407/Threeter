@@ -24,7 +24,7 @@
 			<a href="https://www.linkedin.com/in/nandini-adhyapaka"><img src="./assets/images/linkedin_icon.png"/></a>
 		</header>
     <script>
-			let gameWon = false;
+
       // Initialize keyboardstate
       var keyboard	= new THREEx.KeyboardState(document.body);
       keyboard.domElement.setAttribute("tabIndex", "0");
@@ -110,7 +110,8 @@
 			// create floor's mesh and physics body and add them to scene and physics world respectively
       let floor_mesh = buildFloor(-35*mul, -20*mul, 35*mul, 20*mul);
       scene.add(floor_mesh);
-      // Apply phyics to floor
+      // a possible cannon.js bug where using 1/2 dimensions for width is not working properly,
+			// so tried to expand width and that works most of the time
 			let floor_shape = new CANNON.Box(new CANNON.Vec3(
 				floor_mesh.geometry.parameters.width,
 				floor_mesh.geometry.parameters.height/2,
@@ -329,51 +330,67 @@
 			home_ball_body.body.angularDamping	= 0.9;
 			static_obstacles.push(home_ball_body);
 
+			let gameWon = false;
 			// render loop that repeats 60 times per second (approx. 17ms per loop)
       let lastTimeMsec = null;
+
       let animate = function (nowMsec) {
 				requestAnimationFrame(animate);  // async
         lastTimeMsec	= lastTimeMsec || (nowMsec-1000/60);
-        var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec);
-        // var deltaMsec	= nowMsec - lastTimeMsec;
+        var deltaMsec	= nowMsec - lastTimeMsec;
         lastTimeMsec	= nowMsec;
+
 				if (!gameWon) {
+					// update the positions of all objects in the scene
 					floor_body.update(deltaMsec/1000, nowMsec/1000);
+
+					// for the rotating cubes, their x and z position need to brought back to the
+					// original position since the cubes tend to move sideways as they rotate
 					cube_rotate_obstacles.forEach(function(body, idx) {
 						body.body.position.x = cube_obstacle_pos[idx].x;
 						body.body.position.z = cube_obstacle_pos[idx].z;
 						body.body.angularVelocity.set(0,5,0);
 						body.update(deltaMsec/1000, nowMsec/1000);
 					});
+
 					static_obstacles.forEach(function(body) {
 						body.update(deltaMsec/1000, nowMsec/1000);
 					});
+
 					updateBallPosition(keyboard, ball_body, nowMsec, deltaMsec);
+
 					if (keyboard.pressed('left') || keyboard.pressed('right') || keyboard.pressed('up') || keyboard.pressed('down')) {
 						camera = camera2;
 					}
+
 					updateCameraPosition(camera2, ball_body);
 					if (ball_body.mesh.position.y < -0.5 || ball_body.mesh.position.y > 0.5) {
 						ball_body.body.position.set(-30*mul, 1*mul, 17*mul);
 						ball_body.update(deltaMsec/1000, nowMsec/1000);
 					}
+
 					smokeGroup.forEach(function(smoke) {
 						smoke.tick(deltaMsec/1000);
 					});
+
 			  } else {
 					if (keyboard.pressed('space')) {
 						gameWon = false;
 						lastTimeMsec = null;
+
 						ball_body.body.position.set(-30*mul, 1*mul, 17*mul);
 						// ball_body.update(deltaMsec/1000, nowMsec/1000);
 						scene.remove(text_mesh);
+
 						smokeGroup.forEach(function(smoke) {
 							scene.remove(smoke.mesh);
 						});
 					}
 				}
+
         renderer.render(scene, camera);
       }
+
       requestAnimationFrame(animate);
     </script>
   </body>
