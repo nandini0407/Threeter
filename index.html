@@ -61,12 +61,13 @@
       var physicsWorld = new THREEx.CannonWorld();
       physicsWorld.start();
 
-      const mul = 0.2; // multiplier for scaling down
-
+			// create materials for physics world
 			var pMaterialBall	= new CANNON.Material('pMaterialBall');
 			var pMaterialFloor	= new CANNON.Material('pMaterialFloor');
 			var pMaterialWall	= new CANNON.Material('pMaterialWall');
 			var pMaterialObstacle	= new CANNON.Material('pMaterialObstacle');
+
+			// add contact properties between materials in physics world
 			physicsWorld.world.addContactMaterial(new CANNON.ContactMaterial(
 				pMaterialBall,
 				pMaterialFloor,
@@ -76,14 +77,14 @@
 			physicsWorld.world.addContactMaterial(new CANNON.ContactMaterial(
 				pMaterialBall,
 				pMaterialWall,
-				0.2,	// friction coefficient
-				0.1	// restitution
+				0.2,	// Friction
+				0.1	// Bounciness
 			));
 			physicsWorld.world.addContactMaterial(new CANNON.ContactMaterial(
 				pMaterialObstacle,
 				pMaterialBall,
-				10,	// friction coefficient
-				0	// restitution
+				10,	// Friction
+				0	// Bounciness
 			));
 			physicsWorld.world.addContactMaterial(new CANNON.ContactMaterial(
 				pMaterialObstacle,
@@ -104,6 +105,9 @@
 				0 // Bounciness
 			));
 
+			const mul = 0.2; // multiplier for scaling down
+
+			// create floor's mesh and physics body and add them to scene and physics world respectively
       let floor_mesh = buildFloor(-35*mul, -20*mul, 35*mul, 20*mul);
       scene.add(floor_mesh);
       // Apply phyics to floor
@@ -118,7 +122,7 @@
   			material: pMaterialFloor
   		}).addTo(physicsWorld);
 
-      // Add ball
+      // create ball's mesh and physics body and add them to scene and physics world respectively
       let ball_mesh = buildBall(1*mul);
       scene.add(ball_mesh);
       var ball_body	= new THREEx.CannonBody({
@@ -127,21 +131,27 @@
     		material: pMaterialBall
     	}).addTo(physicsWorld);
       ball_body.body.position.set(-30*mul, 1*mul, 17*mul);
+			// linear and angular damping decide how quickly or slowly the ball should roll to a stop upon
+			// end of keypress
 			ball_body.body.linearDamping = 0.8;
 			ball_body.body.angularDamping	= 0.9;
 
+			// declare a text variable to show winning text if won
 			var text_mesh = null;
+			// create an array for collecting positions of collisions where fire will be generated
 			var smokeGroup = [];
+			// ball must listen to collision events with either obstacles or with the winning home ball
 			ball_body.body.addEventListener("collide", function(event) {
 				if (event.with.userData.object3d.name == "obstacle") {
 					// get ball position
 					let x = ball_body.body.position.x;
 					let y = ball_body.body.position.y;
 					let z = ball_body.body.position.z;
-					// reset the ball position
+					// reset the ball position to its original starting position
 					ball_body.body.position.set(-30*mul, 1*mul, 17*mul);
 					//ball_body.update(deltaMsec/1000, nowMsec/1000);
-					// create smoke
+
+					// create smoke upon collision with obstacle ball
 					smoke = buildSmoke(x, y, z);
 					scene.add(smoke.mesh);
 					smokeGroup.push(smoke);
@@ -169,8 +179,8 @@
 				}
 			});
 
-			//Add walls
-			//left boundary wall
+			// create walls' mesh and physics body and add them to scene and physics world respectively
+			// left boundary wall
 			let wall_mesh_left = buildWall(-34.5*mul - mul/2,-19.5*mul - mul/2,-34.5*mul + mul/2, 19.5*mul + mul/2);
 			scene.add(wall_mesh_left);
 			var wall_body_left	= new THREEx.CannonBody({
@@ -214,6 +224,7 @@
 				mass	: 0,
 				material: pMaterialWall
 			}).addTo(physicsWorld);
+
 			let wall_mesh2 = buildWall(4*mul - mul/2,-18*mul - mul/2,4*mul + mul/2, 8*mul + mul/2);
 			scene.add(wall_mesh2);
 			var wall_body2	= new THREEx.CannonBody({
@@ -221,6 +232,7 @@
 				mass	: 0,
 				material: pMaterialWall
 			}).addTo(physicsWorld);
+
 			let wall_mesh3 = buildWall(-12*mul - mul/2,-8*mul - mul/2,-12*mul + mul/2, 18*mul + mul/2);
 			scene.add(wall_mesh3);
 			var wall_body3	= new THREEx.CannonBody({
@@ -229,7 +241,7 @@
 				material: pMaterialWall
 			}).addTo(physicsWorld);
 
-			// Add sphere obstacles
+			// create spherical obstacles' mesh and physics body and add them to scene and physics world respectively
 			var static_obstacles = [];
 			let obst_ball_mesh1 = buildObstacleBall(4*mul, 10*mul, 12*mul);
 			scene.add(obst_ball_mesh1);
