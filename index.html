@@ -17,7 +17,7 @@
 		<header>
 			<h1>Threeter</h1>
 			<ul>
-				<li>Use arrow keys to move small brown ball towards big brown ball</li>
+				<li>Use arrow keys to move small colored ball towards big colored ball</li>
 				<li>Avoid contact with obstacles</li>
 			</ul>
 			<a href="https://github.com/nandini0407/Threeter/tree/master"><img src="./assets/images/github_icon.png"/></a>
@@ -160,9 +160,10 @@
 						text_mesh.position.x = -22*multiplier;
 						text_mesh.position.z = 0;
 						text_mesh.rotation.x = -Math.PI / 2.5;
-						camera.position.x	= 0;
-						camera.position.y	= 6;
-						camera.position.z	= 5;
+						// camera.position.x	= 0;
+						// camera.position.y	= 6;
+						// camera.position.z	= 5;
+						camera = camera1;
 						scene.add(text_mesh);
 					});
 				}
@@ -316,11 +317,12 @@
 				requestAnimationFrame(animate);  // async
         lastTimeMsec	= lastTimeMsec || (nowMsec-1000/60);
         var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec);
+        // var deltaMsec	= nowMsec - lastTimeMsec;
         lastTimeMsec	= nowMsec;
 				if (!gameWon) {
 					floor_body.update(deltaMsec/1000, nowMsec/1000);
 					cube_rotate_obstacles.forEach(function(body, idx) {
-						body.body.position.x = cube_obstacle_pos[idx].x
+						body.body.position.x = cube_obstacle_pos[idx].x;
 						body.body.position.z = cube_obstacle_pos[idx].z;
 						body.body.angularVelocity.set(0,5,0);
 						body.update(deltaMsec/1000, nowMsec/1000);
@@ -345,7 +347,7 @@
 						gameWon = false;
 						lastTimeMsec = null;
 						ball_body.body.position.set(-30*multiplier, 1*multiplier, 17*multiplier);
-						ball_body.update(deltaMsec/1000, nowMsec/1000);
+						// ball_body.update(deltaMsec/1000, nowMsec/1000);
 						scene.remove(text_mesh);
 						smokeGroup.forEach(function(smoke) {
 							scene.remove(smoke.mesh);
