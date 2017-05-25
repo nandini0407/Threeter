@@ -242,46 +242,50 @@
 			}).addTo(physicsWorld);
 
 			// create spherical obstacles' mesh and physics body and add them to scene and physics world respectively
+			// save the physics bodies in an array
 			var static_obstacles = [];
-			let obst_ball_mesh1 = buildObstacleBall(4*mul, 10*mul, 12*mul);
+
+			let obst_ball_mesh1 = buildObstacleBall(3*mul, -12*mul, -12*mul);
 			scene.add(obst_ball_mesh1);
 			var obst_ball_body1 = new THREEx.CannonBody({
 				mesh	: obst_ball_mesh1,
-				mass	: 500,
+				mass	: 1000,
 				material: pMaterialObstacle
 			}).addTo(physicsWorld);
 			obst_ball_body1.body.linearDamping = 0.8;
 			obst_ball_body1.body.angularDamping	= 0.9;
 			static_obstacles.push(obst_ball_body1);
 
-			let obst_ball_mesh2 = buildObstacleBall(3*mul, 28*mul, -12*mul);
+			let obst_ball_mesh2 = buildObstacleBall(4*mul, 10*mul, 12*mul);
 			scene.add(obst_ball_mesh2);
 			var obst_ball_body2 = new THREEx.CannonBody({
 				mesh	: obst_ball_mesh2,
-				mass	: 500,
+				mass	: 1000,
 				material: pMaterialObstacle
 			}).addTo(physicsWorld);
 			obst_ball_body2.body.linearDamping = 0.8;
 			obst_ball_body2.body.angularDamping	= 0.9;
 			static_obstacles.push(obst_ball_body2);
 
-			let obst_ball_mesh3 = buildObstacleBall(3*mul, -12*mul, -12*mul);
+			let obst_ball_mesh3 = buildObstacleBall(3*mul, 28*mul, -12*mul);
 			scene.add(obst_ball_mesh3);
 			var obst_ball_body3 = new THREEx.CannonBody({
 				mesh	: obst_ball_mesh3,
-				mass	: 500,
+				mass	: 1000,
 				material: pMaterialObstacle
 			}).addTo(physicsWorld);
 			obst_ball_body3.body.linearDamping = 0.8;
 			obst_ball_body3.body.angularDamping	= 0.9;
 			static_obstacles.push(obst_ball_body3);
 
-			// Add cube obstacles
+			// create rotating cube obstacles' mesh and physics body and add them to scene and physics world respectively
+			// save the physics bodies in an array
 			var cube_rotate_obstacles = [];
+			//
 			var cube_obstacle_pos = [];
 
-			let obst_cube_pos1 = {x: 14*mul, z: -10*mul};
-			let obst_cube_mesh1 = buildObstacleCube(2*mul, 1*mul, 7*mul, obst_cube_pos1.x, obst_cube_pos1.z);
+			let obst_cube_pos1 = {x: -24*mul, z: -6*mul};
+			let obst_cube_mesh1 = buildObstacleCube(4*mul, 2*mul, 7*mul, obst_cube_pos1.x, obst_cube_pos1.z);
 			scene.add(obst_cube_mesh1);
 			let obst_cube_body1 = new THREEx.CannonBody({
 				mesh	: obst_cube_mesh1,
@@ -302,8 +306,8 @@
 			cube_rotate_obstacles.push(obst_cube_body2);
 			cube_obstacle_pos.push(obst_cube_pos2);
 
-			let obst_cube_pos3 = {x: -24*mul, z: -6*mul};
-			let obst_cube_mesh3 = buildObstacleCube(4*mul, 2*mul, 7*mul, obst_cube_pos3.x, obst_cube_pos3.z);
+			let obst_cube_pos3 = {x: 14*mul, z: -10*mul};
+			let obst_cube_mesh3 = buildObstacleCube(2*mul, 1*mul, 7*mul, obst_cube_pos3.x, obst_cube_pos3.z);
 			scene.add(obst_cube_mesh3);
 			let obst_cube_body3 = new THREEx.CannonBody({
 				mesh	: obst_cube_mesh3,
@@ -313,6 +317,7 @@
 			cube_rotate_obstacles.push(obst_cube_body3);
 			cube_obstacle_pos.push(obst_cube_pos3);
 
+			// create home ball's mesh and physics body and add them to scene and physics world respectively
 			let home_ball_mesh = buildHomeBall(2*mul, 28*mul, 16*mul);
 			scene.add(home_ball_mesh);
 			var home_ball_body = new THREEx.CannonBody({
@@ -324,6 +329,7 @@
 			home_ball_body.body.angularDamping	= 0.9;
 			static_obstacles.push(home_ball_body);
 
+			// render loop that repeats 60 times per second (approx. 17ms per loop)
       let lastTimeMsec = null;
       let animate = function (nowMsec) {
 				requestAnimationFrame(animate);  // async
